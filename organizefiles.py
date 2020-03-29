@@ -69,7 +69,6 @@ class Organize():
         if(self.dirExist() == False):
             self.makeDir()
         self.moveDirectory()
-        print(self.dirRecordExist()==True)
         if(self.dirRecordExist()==True):
             if (self.checkDirRecordforSelf() == True or self.checkDirRecordforDir()):
                 return
@@ -96,21 +95,34 @@ class Organize():
             if(self.fullFileName == self.text_file):
                 return
             self.fullDoFile()
-        
 
-def goThrough(folder):
+    def fullDoNoDir(self):
+        if(os.path.isdir(self.fullFileName)==True):
+            self.fullDirName= self.fullFileName
+            self.addDirRecord()
+        else:
+            if(self.fullFileName == self.text_file):
+                return
+            self.fullDoFile()
+
+def goThrough(folder, movedir):
     file_list = os.listdir(folder)
-    for item in file_list:
-        organize = Organize(folder, item)
-        organize.fullDo()
+    if(movedir == True):
+        for item in file_list:
+            organize = Organize(folder, item)
+            organize.fullDo()
+    else:
+        for item in file_list:
+            organize = Organize(folder, item)
+            organize.fullDoNoDir()
     return
 
 
 def main():
-    if (len(sys.argv) > 2):
+    if (len(sys.argv) > 3):
         print("Too many arguments")
         return
-    if (len(sys.argv) < 2):
+    if (len(sys.argv) < 3):
         print("Too few arguments")
         return
     folder = sys.argv[1]
@@ -121,7 +133,13 @@ def main():
     if (os.path.exists(dir) == False):
         print("There does not exist a folder called " + dir)
         return
-    goThrough(folder)
+    if(sys.argv[2] == "keepdir"):
+        goThrough(folder, False)
+    elif(sys.argv[2] == "movedir"):
+        goThrough(folder, True)
+    else:
+        print("Not eneough arguments")
+    
     print("File organization complete")
 
 main()
